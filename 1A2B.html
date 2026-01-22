@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1A2B</title>
+</head>
+<body>
+    <h1 id="rule">1A2B</h1>
+    <h2 id="ID"></h2>
+    <button id="home">回首頁</button>
+    <button id="newGame">重新開局</button>
+    <br><br>
+    <button id="lookAns">直接查看答案</button>
+    <button style="visibility: hidden;">12</button>
+    <span id="checkLookAns" style="visibility: hidden;">
+        
+        <span>確定直接查看答案?</span>
+        <button id="sureLookAns">確定</button>
+        <button id="cancelLookAns">取消</button>
+        
+    </span>
+    <br><br>
+    <span>
+        顏色設定:
+    </span>
+    <select id="chooseColor">
+        <option value="red" selected>紅</option>
+        <option value="orange">橙</option>
+        <option value="yellow">黃</option>
+        <option value="green">綠</option>
+        <option value="blue">藍</option>
+        <option value="purple">紫</option>      
+        <option value="pink">粉</option>
+        <option value="brown">棕</option>
+        <option value="black">黑</option> 
+    </select>
+    
+    <br>
+    <span>請輸入四位<span style="color:red">相異</span>數字:</span>
+    <input id="guess">
+    <button id="check">確認</button>
+    
+    <div id="history"></div>
+
+    <script>
+    const website="http://192.168.212.211:4000";
+    const gameId=3;  
+
+    const equ=(first,second)=>{
+        for(let i=0;i<=3;i++)
+        {
+            if(String(first[i])!==String(second[i]))
+                return false;
+        }
+        return true;
+    }
+    
+    const homeEl=document.getElementById("home");
+    const newGameEl=document.getElementById("newGame");
+    const historyEl=document.getElementById("history");
+    const checkEl=document.getElementById("check");
+    const guessEl=document.getElementById("guess");
+    const chooseColorEl=document.getElementById("chooseColor");
+    const lookAnsEl=document.getElementById("lookAns");
+    const checkLookAnsEl=document.getElementById("checkLookAns");
+    const sureLookAnsEl=document.getElementById("sureLookAns");
+    const cancelLookAnsEl=document.getElementById("cancelLookAns");
+
+    let mainColor=chooseColorEl.value;
+    let guessed=[""];
+    historyEl.style.color=mainColor;
+    
+
+    
+    sureLookAnsEl.onclick=(e)=>{
+        alert("你還想直接偷看答案阿! 想得美!");
+        alert(`好啦，沒有啦!答案是${String(ans0)}${String(ans1)}${String(ans2)}${String(ans3)}`);
+        checkLookAnsEl.style.visibility="hidden";
+        lookAnsEl.style.visibility="hidden";
+        historyEl.innerHTML=`<h2>答案: ${String(ans0)}${String(ans1)}${String(ans2)}${String(ans3)}</h2>`+historyEl.innerHTML;
+        
+    }
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    checkEl.onclick=(e)=>{
+        if(historyEl.innerHTML[4]==='一'){
+            alert('已過關');
+        }
+        else if(historyEl.innerHTML[4]==='答'){
+            alert('已查看答案');
+        }
+        else if(guessEl.value.length!==4){
+            alert("請輸入四位相異數字");
+        }
+        else {
+            const arr=["0","1","2","3","4","5","6","7","8","9"];
+            let valid=0;
+            let guess=[-1,-1,-1,-1];
+            for(let h=0;h<=3;h++){
+                for(let i=0;i<=9;i++){
+                    if(guessEl.value[h]==arr[i]){
+                        guess[h]=i;
+                        valid++;
+                        break;
+                    }
+                }
+            }
+            if(valid<4){
+                alert("請輸入四位相異數字");
+            }
+            else{
+                if(guess[0]==guess[1]||guess[0]==guess[2]||guess[0]==guess[3]||guess[1]==guess[2]||guess[1]==guess[3]||guess[2]==guess[3]){
+                    alert("請輸入四位「相異」數字");
+                }
+                else{  
+                    valid=1;
+                    for(var subArr of guessed){
+                        if(equ([guess[0],guess[1],guess[2],guess[3]],subArr)){
+                            valid=0;
+                            break;
+                        }                            
+                    }
+                    if(valid===0)
+                        alert("此組數字已猜過");
+                    else{  
+                        guessEl.value="";
+                        checkEl.style.visibility='hidden';
+                        
+                        fetch(`${website}/guess/${gameId}/${guess[0]}${guess[1]}${guess[2]}${guess[3]}`).then((res)=>{
+                                return res.text();
+                            }).then((result)=>{
+                                guessed.push(`${guess[0]}${guess[1]}${guess[2]}${guess[3]} ${result}`);
+                                historyEl.innerHTML=`<h2>${guess[0]}${guess[1]}${guess[2]}${guess[3]} ${result}</h2>`+historyEl.innerHTML;
+                                if(result==='4A0B'){
+                                    lookAnsEl.style.visibility="hidden";
+                                    checkLookAnsEl.style.visibility="hidden";
+                                    historyEl.innerHTML=`<h2>一共猜了${guessed.length-1}次</h2>`+historyEl.innerHTML;
+                                    alert(`${guess[0]}${guess[1]}${guess[2]}${guess[3]} 恭喜過關`);
+                                }
+                                checkEl.style.visibility='visible';
+                        });
+                    }
+                }
+            }
+        }
+    }  
+
+    sureLookAnsEl.onmouseover=(e)=>{
+        sureLookAnsEl.style.color=mainColor;
+        if(mainColor=="black"){
+            sureLookAnsEl.style.color="blue";
+        }
+    }
+    sureLookAnsEl.onmouseout=(e)=>{
+        sureLookAnsEl.style.color="black";
+    }  
+    cancelLookAnsEl.onmouseover=(e)=>{
+        cancelLookAnsEl.style.color=mainColor;
+        if(mainColor=="black"){
+            cancelLookAnsEl.style.color="blue";
+        }
+    }
+    cancelLookAnsEl.onmouseout=(e)=>{
+        cancelLookAnsEl.style.color="black";
+    }
+    lookAnsEl.onmouseover=(e)=>{
+        lookAnsEl.style.color=mainColor;
+        if(mainColor=="black"){
+            lookAnsEl.style.color="blue";
+        }
+    }
+    lookAnsEl.onmouseout=(e)=>{
+        lookAnsEl.style.color="black";
+    }
+    checkEl.onmouseover=(e)=>{
+        checkEl.style.color=mainColor;
+        if(mainColor=="black"){
+            checkEl.style.color="blue";
+        }
+    }
+    checkEl.onmouseout=(e)=>{
+        checkEl.style.color="black";
+    }
+    homeEl.onmouseover=(e)=>{
+        homeEl.style.color=mainColor;
+        if(mainColor=="black"){
+            homeEl.style.color="blue";
+        }
+    }
+    homeEl.onmouseout=(e)=>{
+        homeEl.style.color="black";
+    }
+    newGameEl.onmouseover=(e)=>{
+        newGameEl.style.color=mainColor;
+        if(mainColor=="black"){
+            newGameEl.style.color="blue";
+        }
+    }
+    newGameEl.onmouseout=(e)=>{
+        newGameEl.style.color="black";
+    }
+    lookAnsEl.onclick=(e)=>{
+        if( checkLookAnsEl.style.visibility==="hidden")
+        checkLookAnsEl.style.visibility="visible";
+        else
+        checkLookAnsEl.style.visibility="hidden";
+    }
+    cancelLookAnsEl.onclick=(e)=>{
+        checkLookAnsEl.style.visibility="hidden";
+    }
+    document.getElementById("home").onclick=(e)=>{
+        window.location.href=`${website}/`;
+    };
+    document.getElementById("newGame").onclick=(e)=>{
+        window.location.href=`${website}/newGame`;
+    };
+    document.onkeydown=(e)=>{        
+        if(e.key=="Enter"){
+            e.preventDefault();
+            if(checkEl.style.visibility!=='hidden')
+                checkEl.click();
+        }       
+    }
+    chooseColorEl.onchange=(e)=>{
+        mainColor=chooseColorEl.value;
+        historyEl.style.color=mainColor;
+    }
+
+    for(let i=1;i<guessed.length;i++){
+        historyEl.innerHTML=`<h2>${guessed[i]}</h2>`+historyEl.innerHTML;
+    }
+    document.getElementById("ID").innerHTML=`Game ID : ${gameId}`;
+    
+    </script>
+</body>
+</html>

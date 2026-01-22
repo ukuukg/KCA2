@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1A2B HomePage</title>
+</head>
+<body>
+    <br><br><br>
+    <button id="newGame">New Game</button>
+    <br><br><br><br><br><br><br>
+    <button id="oldGame">Old Game</button>
+    <br><br>
+    <div id="setOldGame">
+        <span>Game ID :</span>
+        <input id="gameId">
+        <button id="start">start</button>
+    </div>
+    <script>
+        const website="http://192.168.212.211:4000";
+        const setOldGameElement=document.getElementById('setOldGame');
+        const startElement=document.getElementById('start');
+        document.getElementById('newGame').onclick=(e)=>{
+            window.location.href=`${website}/newGame`;
+        }
+        document.getElementById('oldGame').onclick=(e)=>{
+            
+            if(setOldGameElement.style.visibility==='hidden'){
+                setOldGameElement.style.visibility='visible';
+            }else{
+                setOldGameElement.style.visibility='hidden';
+            }
+        }
+        document.getElementById('start').onclick=(e)=>{
+            window.location.href=`${website}/game/${document.getElementById('gameId').value}`;
+        }
+        document.onkeydown=(e)=>{
+            if(e.key==='Enter'){
+                e.preventDefault();
+                if(setOldGameElement.style.visibility!=='hidden'){
+                    startElement.click();
+                }
+            }
+        }
+        alert('No such game ID');
+    </script>
+</body>
+</html>

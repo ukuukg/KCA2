@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KCA root</title>
+</head>
+<body>
+    <span>密碼：</span>
+    <input id="password">
+    <button id="sure">確定</button>
+    
+    <script>
+        const website="http://192.168.212.211:4000";
+        const setOldGameElement=document.getElementById('setOldGame');
+        const startElement=document.getElementById('start');
+        document.getElementById('newGame').onclick=(e)=>{
+            window.location.href=`${website}/newGame`;
+        }
+        document.getElementById('oldGame').onclick=(e)=>{
+            if(setOldGameElement.style.visibility==='hidden'){
+                setOldGameElement.style.visibility='visible';
+            }else{
+                setOldGameElement.style.visibility='hidden';
+            }
+        }
+        document.getElementById('start').onclick=(e)=>{
+            window.location.href=`${website}/game/${document.getElementById('gameId').value}`;
+        }
+        document.onkeydown=(e)=>{
+            if(e.key==='Enter'){
+                e.preventDefault();
+                if(setOldGameElement.style.visibility==='visible'){
+                    startElement.click();
+                }
+            }
+        }
+
+    </script>
+</body>
+</html>
